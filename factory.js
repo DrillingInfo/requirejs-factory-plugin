@@ -46,10 +46,14 @@ define(function() {
         }
 
         function load(name, req, localLoad, config) {
-            var url = req.toUrl(name);
-            var text = readFile(url);
+            var fs = require.nodeRequire('fs'),
+                vm = require.nodeRequire('vm'),
+                url = req.toUrl(name),
+                text = readFile(url),
+                factory;
             factories[name] = extractFactoryFunctionFromModule(text);
-            localLoad();
+            factory = vm.runInThisContext('(' + factories[name] + ')', fs.realpathSync(url));
+            localLoad(factory);
         }
 
         function write(pluginName, moduleName, localWrite) {
