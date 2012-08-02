@@ -6,8 +6,8 @@ define(function() {
     var factories = [];
 
     function interceptModuleExecuteCallback() {
-        var oldExecCb = require.execCb;
-        require.execCb = function(fullname, callback) {
+        var oldExecCb = this.execCb;
+        this.execCb = function(fullname, callback) {
             factories[fullname] = callback;
             return oldExecCb.apply(this, arguments);
         }
