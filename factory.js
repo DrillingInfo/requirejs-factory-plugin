@@ -46,10 +46,13 @@ define(function() {
         }
 
         function load(name, req, localLoad, config) {
-            var url = req.toUrl(name);
-            var text = readFile(url);
+            var url = req.toUrl(name),
+                text = readFile(url),
+                factory;
             factories[name] = extractFactoryFunctionFromModule(text);
-            localLoad();
+            // why doesn't localLoad.fromText() return the evaluated result?
+            factory = eval('(function () { return ' + factories[name] + '; })()');
+            localLoad(factory);
         }
 
         function write(pluginName, moduleName, localWrite) {
